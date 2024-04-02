@@ -1,5 +1,4 @@
 import { useState } from "react";
-import FooterTodo from "./FooterTodo";
 
 const TodoApp = () => {
   const [todo, setTodo] = useState({ text: "", isCompleted: false });
@@ -9,17 +8,64 @@ const TodoApp = () => {
     e.preventDefault();
     setTodo({ text: e.target.value, isCompleted: false });
   };
-  const handleNewTodo = () => {
-    if (todo.text === "") {
+  const handleNewTodo = (e) => {
+    e.preventDefault();
+    if (todo.text.trim() === "") {
       return false;
     }
     setTodos([...todos, todo]);
-    console.log(todos);
     setTodo({ text: "", isCompleted: false });
   };
-  const changeComplete = () => {
-    console.log("deneme");
+  const changeComplete = (index) => {
+    const updatedTodos = todos.map((todo) => {
+      if (todo.text === todos[index].text) {
+        return {
+          ...todo,
+          isCompleted: !todo.isCompleted,
+        };
+      }
+      return todo;
+    });
+
+    setTodos(updatedTodos);
   };
+  const markAll = () => {
+    const allCompleted = todos.every((todo) => todo.isCompleted);
+    const update = todos.map((todo) => ({
+      ...todo,
+      isCompleted: !allCompleted,
+    }));
+
+    setTodos(update);
+  };
+  const handleDeleting = (index) => {
+    setTodos((oldValues) =>
+      oldValues.filter((todo) => todo.text !== todos[index].text)
+    );
+  };
+  const getLength = () => {
+    let length = todos.length;
+    todos.forEach((todo) => {
+      if (todo.isCompleted) {
+        length--;
+      }
+    });
+    return length;
+  };
+  const getAll = () => {
+    return setTodos(todos);
+  };
+  const getActiveTodos = () => {
+    return todos.filter((todo) => !todo.isCompleted);
+  };
+  const getCompleted = () => {
+    return todos.filter((todo) => todo.isCompleted);
+  };
+  const clearCompleted = () => {
+    const updatedTodos = todos.filter((todo) => !todo.isCompleted);
+    setTodos(updatedTodos);
+  };
+
   return (
     <section className="main">
       <div className="todoapp">
@@ -35,77 +81,68 @@ const TodoApp = () => {
         </form>
         <section className="main">
           <input className="toggle-all" type="checkbox" />
-          <label htmlFor="toggle-all">Mark all as complete</label>
+          <label htmlFor="toggle-all" onClick={() => markAll()}>
+            Mark all as complete
+          </label>
           <ul className="todo-list">
-            <li className="completed">
-              <div className="view">
-                <input
-                  className="toggle"
-                  type="checkbox"
-                  onChange={changeComplete}
-                />
-                <label>Learn JavaScript</label>
-                <button className="destroy"></button>
-              </div>
-            </li>
-            <li>
-              <div className="view">
-                <input
-                  className="toggle"
-                  type="checkbox"
-                  onChange={changeComplete}
-                />
-                <label>Learn React</label>
-                <button className="destroy"></button>
-              </div>
-            </li>
-            <li>
-              <div className="view">
-                <input
-                  className="toggle"
-                  type="checkbox"
-                  onChange={changeComplete}
-                />
-                <label>Have a life!</label>
-                <button className="destroy"></button>
-              </div>
-            </li>
             {todos.map((todo, i) => {
-              //   if (todo.isCompleted) {
-              //     return (
-              //       <li key={i} className="completed">
-              //         <div className="view">
-              //           <input
-              //             className="toggle"
-              //             type="checkbox"
-              //             onChange={changeComplete}
-              //           />
-              //           <label>{todo.text}</label>
-              //           <button className="destroy"></button>
-              //         </div>
-              //       </li>
-              //     );
-              //   } else {
               return (
-                <li key={i}>
+                <li key={i} className={todo.isCompleted ? "completed" : ""}>
                   <div className="view">
                     <input
                       className="toggle"
                       type="checkbox"
-                      onChange={changeComplete}
+                      checked={todo.isCompleted}
+                      onChange={() => changeComplete(i)}
                     />
                     <label>{todo.text}</label>
-                    <button className="destroy"></button>
+                    <button
+                      className="destroy"
+                      onClick={() => handleDeleting(i)}
+                    ></button>
                   </div>
                 </li>
               );
-              //   }
             })}
           </ul>
         </section>
+        <footer className="footer">
+          <span className="todo-count">
+            <strong>{getLength()}</strong>&nbsp; items left
+          </span>
 
-        <FooterTodo />
+          <ul className="filters">
+            <li>
+              <a href="#/" className="selected" onClick={getAll}>
+                All
+              </a>
+            </li>
+            <li>
+              <a href="#/" onClick={getActiveTodos}>
+                Active
+              </a>
+            </li>
+            <li>
+              <a href="#/" onClick={getCompleted}>
+                Completed
+              </a>
+            </li>
+          </ul>
+
+          <button className="clear-completed" onClick={clearCompleted}>
+            Clear completed
+          </button>
+        </footer>
       </div>
+      <footer className="info">
+        <p>Click to edit a todo</p>
+        <p>
+          Created by <a href="https://d12n.me/">Dmitry Sharabin</a>
+        </p>
+        <p>
+          Part of <a href="http://todomvc.com">TodoMVC</a>
+        </p>
+      </footer>
     </section>
   );
 };

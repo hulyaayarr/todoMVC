@@ -1,38 +1,23 @@
-const FooterTodo = () => {
-  return (
-    <div>
-      <footer className="footer">
-        <span className="todo-count">
-          <strong>2</strong>&nbsp; items left
-        </span>
+// import PropTypes from "proptypes";
 
-        <ul className="filters">
-          <li>
-            <a href="#/" className="selected">
-              All
-            </a>
-          </li>
-          <li>
-            <a href="#/">Active</a>
-          </li>
-          <li>
-            <a href="#/">Completed</a>
-          </li>
-        </ul>
+// const FooterTodo = ({
+//   length,
+//   getAll,
+//   getActiveTodos,
+//   getCompleted,
+//   clearCompleted,
+// }) => {
+//   return (
+//     <div>
 
-        <button className="clear-completed">Clear completed</button>
-      </footer>
-
-      <footer className="info">
-        <p>Click to edit a todo</p>
-        <p>
-          Created by <a href="https://d12n.me/">Dmitry Sharabin</a>
-        </p>
-        <p>
-          Part of <a href="http://todomvc.com">TodoMVC</a>
-        </p>
-      </footer>
-    </div>
-  );
-};
-export default FooterTodo;
+//     </div>
+//   );
+// };
+// FooterTodo.propTypes = {
+//   length: PropTypes.number.isRequired,
+//   getAll: PropTypes.func.isRequired,
+//   getActiveTodos: PropTypes.func.isRequired,
+//   getCompleted: PropTypes.func.isRequired,
+//   clearCompleted: PropTypes.func.isRequired,
+// };
+// export default FooterTodo;
