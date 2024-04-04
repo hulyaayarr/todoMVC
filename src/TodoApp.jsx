@@ -3,6 +3,20 @@ import { useState } from "react";
 const TodoApp = () => {
   const [todo, setTodo] = useState({ text: "", isCompleted: false });
   const [todos, setTodos] = useState([]);
+  const [filterType, setFilterType] = useState("active");
+
+  const filteredTodos = () => {
+    if (filterType === "all") {
+      return todos;
+    } else if (filterType === "completed") {
+      return todos.filter((todo) => todo.isCompleted);
+    } else if (filterType === "active") {
+      return todos.filter((todo) => !todo.isCompleted);
+    }
+  };
+  const handleFilterChange = (type) => {
+    setFilterType(type);
+  };
 
   const newTodo = (e) => {
     e.preventDefault();
@@ -52,20 +66,10 @@ const TodoApp = () => {
     });
     return length;
   };
-  const getAll = () => {
-    return setTodos(todos);
-  };
-  const getActiveTodos = () => {
-    return todos.filter((todo) => !todo.isCompleted);
-  };
-  const getCompleted = () => {
-    return todos.filter((todo) => todo.isCompleted);
-  };
   const clearCompleted = () => {
     const updatedTodos = todos.filter((todo) => !todo.isCompleted);
     setTodos(updatedTodos);
   };
-
   return (
     <section className="main">
       <div className="todoapp">
@@ -80,12 +84,17 @@ const TodoApp = () => {
           />
         </form>
         <section className="main">
-          <input className="toggle-all" type="checkbox" />
-          <label htmlFor="toggle-all" onClick={() => markAll()}>
-            Mark all as complete
-          </label>
+          {todos.length > 0 ? (
+            <>
+              <input className="toggle-all" type="checkbox" />
+              <label htmlFor="toggle-all" onClick={() => markAll()}>
+                Mark all as complete
+              </label>
+            </>
+          ) : null}
+
           <ul className="todo-list">
-            {todos.map((todo, i) => {
+            {filteredTodos().map((todo, i) => {
               return (
                 <li key={i} className={todo.isCompleted ? "completed" : ""}>
                   <div className="view">
@@ -105,35 +114,58 @@ const TodoApp = () => {
               );
             })}
           </ul>
-        </section>
-        <footer className="footer">
-          <span className="todo-count">
-            <strong>{getLength()}</strong>&nbsp; items left
-          </span>
+        </section>{" "}
+        {todos.length > 0 ? (
+          <>
+            <footer className="footer">
+              <span className="todo-count">
+                <strong>{getLength()}</strong>&nbsp; items left
+              </span>
 
-          <ul className="filters">
-            <li>
-              <a href="#/" className="selected" onClick={getAll}>
-                All
-              </a>
-            </li>
-            <li>
-              <a href="#/" onClick={getActiveTodos}>
-                Active
-              </a>
-            </li>
-            <li>
-              <a href="#/" onClick={getCompleted}>
-                Completed
-              </a>
-            </li>
-          </ul>
+              <ul className="filters">
+                <li>
+                  <a
+                    href="#/"
+                    className={filterType === "all" ? "selected" : ""}
+                    onClick={() => {
+                      handleFilterChange("all");
+                    }}
+                  >
+                    All
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="#/"
+                    className={filterType === "active" ? "selected" : ""}
+                    onClick={() => {
+                      handleFilterChange("active");
+                    }}
+                  >
+                    Active
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="#/"
+                    className={filterType === "completed" ? "selected" : ""}
+                    onClick={() => {
+                      handleFilterChange("completed");
+                    }}
+                  >
+                    Completed
+                  </a>
+                </li>
+              </ul>
 
-          <button className="clear-completed" onClick={clearCompleted}>
-            Clear completed
-          </button>
-        </footer>
+              <button className="clear-completed" onClick={clearCompleted}>
+                Clear completed
+              </button>
+            </footer>
+          </>
+        ) : null}
       </div>
+
       <footer className="info">
         <p>Click to edit a todo</p>
         <p>
