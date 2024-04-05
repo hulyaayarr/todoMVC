@@ -418,6 +418,3 @@ meta,
 [property="todo"] .view:focus-within button {
   display: none !important;
 }
-.hide {
-  display: none;
-}

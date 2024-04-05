@@ -1,9 +1,22 @@
 import { useState } from "react";
-
+import { v4 as uuidv4 } from "uuid";
 const TodoApp = () => {
-  const [todo, setTodo] = useState({ text: "", isCompleted: false });
+  let userID = 1;
+  const [todo, setTodo] = useState({
+    text: "",
+    isCompleted: false,
+    userId: userID,
+  });
   const [todos, setTodos] = useState([]);
   const [filterType, setFilterType] = useState("active");
+  function handleEdit(userId, newText) {
+    const updatedTodos = [...todos];
+    const index = updatedTodos.findIndex((todo) => todo.userId === userId);
+    if (index !== -1) {
+      updatedTodos[index].text = newText;
+      setTodos(updatedTodos);
+    }
+  }
 
   const filteredTodos = () => {
     if (filterType === "all") {
@@ -20,19 +33,29 @@ const TodoApp = () => {
 
   const newTodo = (e) => {
     e.preventDefault();
-    setTodo({ text: e.target.value, isCompleted: false });
+    setTodo({
+      text: e.target.value,
+      isCompleted: false,
+      userId: uuidv4(),
+    });
   };
+
   const handleNewTodo = (e) => {
+    console.log(userID);
     e.preventDefault();
     if (todo.text.trim() === "") {
       return false;
     }
     setTodos([...todos, todo]);
-    setTodo({ text: "", isCompleted: false });
+    setTodo({
+      text: "",
+      isCompleted: false,
+      userId: "",
+    });
   };
-  const changeComplete = (index) => {
+  const changeComplete = (userId) => {
     const updatedTodos = todos.map((todo) => {
-      if (todo.text === todos[index].text) {
+      if (todo.userId === userId) {
         return {
           ...todo,
           isCompleted: !todo.isCompleted,
@@ -52,10 +75,8 @@ const TodoApp = () => {
 
     setTodos(update);
   };
-  const handleDeleting = (index) => {
-    setTodos((oldValues) =>
-      oldValues.filter((todo) => todo.text !== todos[index].text)
-    );
+  const handleDeleting = (userId) => {
+    setTodos((oldValues) => oldValues.filter((todo) => todo.userId !== userId));
   };
   const getLength = () => {
     let length = todos.length;
@@ -94,27 +115,47 @@ const TodoApp = () => {
           ) : null}
 
           <ul className="todo-list">
-            {filteredTodos().map((todo, i) => {
+            {filteredTodos().map((todo) => {
               return (
-                <li key={i} className={todo.isCompleted ? "completed" : ""}>
+                <li
+                  key={todo.userId}
+                  className={todo.isCompleted ? "completed" : ""}
+                >
                   <div className="view">
                     <input
                       className="toggle"
                       type="checkbox"
                       checked={todo.isCompleted}
-                      onChange={() => changeComplete(i)}
+                      onChange={() => changeComplete(todo.userId)}
                     />
-                    <label>{todo.text}</label>
+
+                    <label
+                      onClick={(e) => {
+                        e.target.contentEditable = true;
+                      }}
+                      onBlur={(e) => {
+                        e.target.contentEditable = false;
+                        handleEdit(todo.userId, e.target.innerText);
+                      }}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") {
+                          e.preventDefault();
+                          e.target.blur();
+                        }
+                      }}
+                    >
+                      {todo.text}
+                    </label>
                     <button
                       className="destroy"
-                      onClick={() => handleDeleting(i)}
+                      onClick={() => handleDeleting(todo.userId)}
                     ></button>
                   </div>
                 </li>
               );
             })}
           </ul>
-        </section>{" "}
+        </section>
         {todos.length > 0 ? (
           <>
             <footer className="footer">
